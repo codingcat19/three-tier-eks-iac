@@ -33,11 +33,11 @@ spec:
         # --- RESOURCE LIMITS ADDED HERE ---
         resources:
           requests:
-            cpu: "10m"      # 10% of a CPU core
-            memory: "64Mi"
-          limits:
-            cpu: "100m"      # Max 20% of a CPU core
+            cpu: "100m"      # 10% of a CPU core
             memory: "128Mi"
+          limits:
+            cpu: "200m"      # Max 20% of a CPU core
+            memory: "256Mi"
         # ----------------------------------
         volumeMounts:
         - name: mongo-data
