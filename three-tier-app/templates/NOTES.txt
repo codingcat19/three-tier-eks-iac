@@ -1,0 +1,4 @@
+Your Three-Tier App is deploying!
+
+Frontend: {{ .Values.frontend.apiUrl }}
+Environment: {{ .Values.environment }}

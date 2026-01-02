@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "three-tier-app.fullname" . }}-web
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      role: web
+  template:
+    metadata:
+      labels:
+        role: web
+    spec:
+      containers:
+      - name: web
+        image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+        env:
+          - name: REACT_APP_API_URL
+            value: {{ .Values.frontend.apiUrl | quote }}
+        ports:
+        - containerPort: {{ .Values.frontend.port }}

@@ -1,0 +1,38 @@
+# Global environment setting
+environment: demo
+
+# Backend (API) Configuration
+backend:
+  replicaCount: 2
+  port: 8080
+  image:
+    repository: codingcat19/api
+    tag: v2
+    pullPolicy: Always
+  env:
+  - name: DB_URL
+    value: "mongodb://admin:password123@mongodb-svc:27017/tasks?authSource=admin"
+  # mongoConnStr: "mongodb://mongodb-svc:27017/todo?directConnection=true"
+
+# Frontend (Web) Configuration
+frontend:
+  replicaCount: 1
+  port: 3000
+  image:
+    repository: codingcat19/web
+    tag: v6
+    pullPolicy: Always
+  # This tells the frontend where the backend API is located
+  apiUrl: "http://13.232.90.20:30008/api/tasks"
+  service: 
+    type: NodePort
+
+# MongoDB Connection Secrets
+mongodb:
+  secretName: mongo-sec
+  hostPath: "/mnt/mongo-data"
+  env:
+  - name: MONGO_INITDB_ROOT_USERNAME
+    value: "admin"
+  - name: MONGO_INITDB_ROOT_PASSWORD
+    value: "password123"
