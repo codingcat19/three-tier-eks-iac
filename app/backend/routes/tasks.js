@@ -4,6 +4,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
     try {
+        console.log("Request Body:", req.body);
         const task = await new Task(req.body).save();
         res.send(task);
     } catch (error) {
@@ -16,7 +17,7 @@ router.get("/", async (req, res) => {
         const tasks = await Task.find();
         res.send(tasks);
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 });
 
