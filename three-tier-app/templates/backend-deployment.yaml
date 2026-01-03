@@ -17,7 +17,7 @@ spec:
         image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
         env:
           - name: MONGO_CONN_STR
-            value: "mongodb://admin:password123@mongodb-svc:27017/tasks?authSource=admin"
+            value: "mongodb://admin:password123@mongodb-svc:27017/todoapp?authSource=admin"
           - name: MONGO_USERNAME
             valueFrom:
               secretKeyRef:
