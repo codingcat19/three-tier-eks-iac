@@ -38,7 +38,7 @@ spec:
         # HEALTH CHECKS (Probes)
         readinessProbe:
           httpGet:
-            path: /api/tasks
+            path: /ok
             port: {{ .Values.backend.port }}
           initialDelaySeconds: 5
           periodSeconds: 10
