@@ -11,7 +11,7 @@ backend:
     pullPolicy: Always
   env:
   - name: DB_URL
-    value: "mongodb://admin:password123@mongodb-svc:27017/tasks?authSource=admin"
+    value: "mongodb://admin:password123@mongodb-svc:27017/todoapp?authSource=admin"
   # mongoConnStr: "mongodb://mongodb-svc:27017/todo?directConnection=true"
 
 # Frontend (Web) Configuration
