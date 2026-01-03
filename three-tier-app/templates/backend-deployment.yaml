@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "three-tier-app.fullname" . }}-api
+  labels:
+    role: api
 spec:
   replicas: {{ .Values.backend.replicaCount }}
   selector:
@@ -15,9 +17,9 @@ spec:
       containers:
       - name: api
         image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+        imagePullPolicy: IfNotPresent
         env:
-          - name: MONGO_CONN_STR
-            value: "mongodb://admin:password123@mongodb-svc:27017/todoapp?authSource=admin"
+          # Constructing the connection string using the Secrets
           - name: MONGO_USERNAME
             valueFrom:
               secretKeyRef:
@@ -28,21 +30,31 @@ spec:
               secretKeyRef:
                 name: {{ .Values.mongodb.secretName }}
                 key: password
+          - name: MONGO_CONN_STR
+            value: "mongodb://$(MONGO_USERNAME):$(MONGO_PASSWORD)@mongodb-svc:27017/todoapp?authSource=admin"
         ports:
         - containerPort: {{ .Values.backend.port }}
-        # --- RESOURCE LIMITS ADDED HERE ---
+        
+        # HEALTH CHECKS (Probes)
+        readinessProbe:
+          httpGet:
+            path: /api/tasks
+            port: {{ .Values.backend.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        # Checks if the app has crashed or deadlocked
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.backend.port }}
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        # ------------------------------
+
         resources:
           requests:
-            cpu: "100m"      # 10% of a CPU core
+            cpu: "100m"
             memory: "128Mi"
           limits:
-            cpu: "200m"      # Max 20% of a CPU core
+            cpu: "200m"
             memory: "256Mi"
-        # ----------------------------------
-        volumeMounts:
-        - name: mongo-data
-          mountPath: /data/db
-      volumes:
-      - name: mongo-data
-        persistentVolumeClaim:
-          claimName: mongo-pvc
