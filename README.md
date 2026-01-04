@@ -3,11 +3,14 @@
 # Prerequisite 
 
 **Install Kubectl**
+```
 https://kubernetes.io/docs/tasks/tools/
-
+```
 
 **Install Helm**
+```
 https://helm.sh/docs/intro/install/
+```
 
 ```
 helm repo update
