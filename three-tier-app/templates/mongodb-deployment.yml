@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: mongodb
 spec:
+  nodeSelector:
+    kubernetes.io/hostname: three-tier-cluster-worker
   replicas: 1
   selector:
     matchLabels:
