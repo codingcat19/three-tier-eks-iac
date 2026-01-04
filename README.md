@@ -41,3 +41,20 @@ __4. Observability Stack__<br>
 Configured Prometheus to scrape cluster metrics and Grafana to visualize system health.
 - Tracked "Golden Signals": Latency, Traffic, Errors, and Saturation.
 - Monitoring of Node-level resource usage on the EC2 host.
+
+# How to Run
+## Automation Scripts
+I developed custom bash scripts to manage the lifecycle of the local cluster to save AWS costs:
+
+## To Pause the Infrastructure:
+```
+chmod +x pause.sh
+./pause.sh
+```
+
+## To Resume & Fix Networking:
+```
+chmod +x resume.sh
+./resume.sh
+```
+
