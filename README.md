@@ -3,146 +3,58 @@
 # Prerequisite 
 
 **Install Kubectl**
+```
 https://kubernetes.io/docs/tasks/tools/
-
+```
 
 **Install Helm**
+```
 https://helm.sh/docs/intro/install/
+```
 
 ```
 helm repo update
 ```
 
-**Install/update latest AWS CLI:** (make sure install v2 only)
-https://aws.amazon.com/cli/
+# Architecture Overview
+The project focuses on moving away from manual deployments toward a self-healing, observable infrastructure.
+- Frontend: React.js (Nginx)
+- Backend: Node.js/Express API
+- Database: MongoDB (Stateful with PVC)
+- Orchestration: Kubernetes (Kind)
+- Deployment: GitOps via ArgoCD
+- Monitoring: Prometheus & Grafana
 
-#update the Kubernetes context
-aws eks update-kubeconfig --name my-eks-cluster --region us-west-2
+# Key DevOps Features Implemented
+__1. GitOps Workflow (ArgoCD)__<br>
+Implemented a declarative CD pipeline. Any changes pushed to the main branch are automatically detected and synced by ArgoCD, ensuring the cluster state matches the Git source of truth.
 
-# verify access:
-```
-kubectl auth can-i "*" "*"
-kubectl get nodes
-```
+__2. Data Persistence__<br>
+To prevent data loss during pod restarts or cluster pauses, I implemented Persistent Volume Claims (PVCs) for MongoDB. The data is mapped to the underlying Docker volumes, ensuring the database is stateful.
 
-# Verify autoscaler running:
-```
-kubectl get pods -n kube-system
-```
+__3. Self-Healing & Reliability__
+- Liveness Probes: Automatically restarts containers if the application process hangs.
+- Readiness Probes: Ensures traffic is only routed to the API once the MongoDB handshake is successful.
+- Resource Limits: Defined CPU and Memory limits to prevent "Noisy Neighbor" issues within the Kind nodes.
 
-# Check Autoscaler logs
-```
-kubectl logs -f \
-  -n kube-system \
-  -l app=cluster-autoscaler
-```
+__4. Observability Stack__<br>
+Configured Prometheus to scrape cluster metrics and Grafana to visualize system health.
+- Tracked "Golden Signals": Latency, Traffic, Errors, and Saturation.
+- Monitoring of Node-level resource usage on the EC2 host.
 
-# Check load balancer logs
+# How to Run
+## Automation Scripts
+I developed custom shell scripts to manage the lifecycle of the local cluster to save AWS costs:
+
+## To Pause the Infrastructure:
 ```
-kubectl logs -f -n kube-system \
-  -l app.kubernetes.io/name=aws-load-balancer-controller
-```
-
-<!-- aws eks update-kubeconfig \
-  --name my-eks \
-  --region us-west-2 \
-  --profile eks-admin -->
-
-
-# Buid Docker image :
-**For Mac:**
-
-```
-export DOCKER_CLI_EXPERIMENTAL=enabled
-aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w8u5e4v2
+chmod +x pause.sh
+./pause.sh
 ```
 
-Buid Front End :
-
+## To Resume & Fix Networking:
 ```
-docker buildx build --platform linux/amd64 -t workshop-frontend:v1 . 
-docker tag workshop-frontend:v1 public.ecr.aws/w8u5e4v2/workshop-frontend:v1
-docker push public.ecr.aws/w8u5e4v2/workshop-frontend:v1
+chmod +x resume.sh
+./resume.sh
 ```
 
-
-Buid Back End :
-
-```
-docker buildx build --platform linux/amd64 -t workshop-backend:v1 . 
-docker tag workshop-backend:v1 public.ecr.aws/w8u5e4v2/workshop-backend:v1
-docker push public.ecr.aws/w8u5e4v2/workshop-backend:v1
-```
-
-**For Linux/Windows:**
-
-Buid Front End :
-
-```
-docker build -t workshop-frontend:v1 . 
-docker tag workshop-frontend:v1 public.ecr.aws/w8u5e4v2/workshop-frontend:v1
-docker push public.ecr.aws/w8u5e4v2/workshop-frontend:v1
-```
-
-
-Buid Back End :
-
-```
-docker build -t workshop-backend:v1 . 
-docker tag workshop-backend:v1 public.ecr.aws/w8u5e4v2/workshop-backend:v1
-docker push public.ecr.aws/w8u5e4v2/workshop-backend:v1
-```
-
-
-
-**Create Namespace**
-```
-kubectl create ns workshop
-
-kubectl config set-context --current --namespace workshop
-```
-
-# MongoDB Database Setup
-
-**To create MongoDB Resources**
-```
-cd k8s_manifests/mongo_v1
-kubectl apply -f secrets.yaml
-kubectl apply -f deploy.yaml
-kubectl apply -f service.yaml
-```
-
-# Backend API Setup
-
-Create NodeJs API deployment by running the following command:
-```
-kubectl apply -f backend-deployment.yaml
-kubectl apply -f backend-service.yaml
-``
-
-
-**Frontend setup**
-
-Create the Frontend  resource. In the terminal run the following command:
-```
-kubectl apply -f frontend-deployment.yaml
-kubectl apply -f frontend-service.yaml
-```
-
-Finally create the final load balancer to allow internet traffic:
-```
-kubectl apply -f full_stack_lb.yaml
-```
-
-
-# Any issue with the pods ? check logs:
-kubectl logs -f POD_ID -f
-
-
-# Grafana setup 
-Username: admin
-Password: prom-operator
-
-Import Dashboard ID: 1860
-
-Exlore more at: https://grafana.com/grafana/dashboards/
