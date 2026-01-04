@@ -44,7 +44,7 @@ Configured Prometheus to scrape cluster metrics and Grafana to visualize system 
 
 # How to Run
 ## Automation Scripts
-I developed custom bash scripts to manage the lifecycle of the local cluster to save AWS costs:
+I developed custom shell scripts to manage the lifecycle of the local cluster to save AWS costs:
 
 ## To Pause the Infrastructure:
 ```
