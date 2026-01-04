@@ -37,7 +37,7 @@ __3. Self-Healing & Reliability__
 - Readiness Probes: Ensures traffic is only routed to the API once the MongoDB handshake is successful.
 - Resource Limits: Defined CPU and Memory limits to prevent "Noisy Neighbor" issues within the Kind nodes.
 
-__4. Observability Stack__
+__4. Observability Stack__<br>
 Configured Prometheus to scrape cluster metrics and Grafana to visualize system health.
 - Tracked "Golden Signals": Latency, Traffic, Errors, and Saturation.
 - Monitoring of Node-level resource usage on the EC2 host.
